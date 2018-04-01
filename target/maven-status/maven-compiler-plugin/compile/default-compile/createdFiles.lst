@@ -1,0 +1,11 @@
+com/cadena/service/LocationService.class
+com/cadena/config/JerseyConfig.class
+com/cadena/model/DomainEntity.class
+com/cadena/model/Location.class
+com/cadena/model/Person.class
+com/cadena/config/Generator.class
+com/cadena/model/User.class
+com/cadena/config/HibernateConfig.class
+com/cadena/dao/LocationDaoImpl.class
+com/cadena/model/Authorities.class
+com/cadena/dao/ILocacionDao.class

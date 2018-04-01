@@ -57,9 +57,6 @@ public class LocationService {
 	public Response addLatestLocation(@PathParam("id") String id, @PathParam("nmea") String nmea,
 			@PathParam("dateTime") String dateTime) {
 		try {
-			System.out.println("id:" + id);
-			System.out.println("nmea:" + nmea);
-			System.out.println("DateTime:" + dateTime);
 			locationDao.addLocation(nmea);
 			return Response.ok("Location Added").build();
 		} catch (Exception e) {

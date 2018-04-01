@@ -22,8 +22,6 @@ public class HibernateConfig {
  
             return metadata.getSessionFactoryBuilder().build();
         } catch (Exception ex) {
-         
-            System.err.println("Initial SessionFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }

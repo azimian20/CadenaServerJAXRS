@@ -69,10 +69,11 @@ public class LocationService {
 	// @PermitAll
 	@GET
 	@Path("/get")
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response getLatestLocation() {
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getLatestLocationObject() {
 		try {
-			String location = locationDao.getLatestLocation();
+			Location location = locationDao.getLatestLocationObject();
+			System.out.println("Location Service 76_________dateformate before serialization: "+location.getDateTime().toString());
 			return Response.ok(location).build();
 		} catch (Exception e) {
 			System.out.println(e);

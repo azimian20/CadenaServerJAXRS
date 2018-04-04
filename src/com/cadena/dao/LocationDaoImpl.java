@@ -31,6 +31,22 @@ public class LocationDaoImpl implements ILocacionDao {
 			return latetstLocations.get(0).getgMapGps();
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public Location getLatestLocationObject() throws Exception {
+		Session session = factory.openSession();
+		List<Location> latetstLocations = (List<Location>) session
+				.createQuery("from Location l where l.dateTime=(select MAX(l2.dateTime) from Location l2)").list();
+		session.close();
+		if (latetstLocations.isEmpty()) {
+			throw new Exception("location not found");
+		} else if (latetstLocations.size() > 1) {
+			throw new Exception("error executing query");
+		} else {
+			return latetstLocations.get(0);
+		}
+	}
 
 	@Transactional
 	public void addLocation(String nmea) {

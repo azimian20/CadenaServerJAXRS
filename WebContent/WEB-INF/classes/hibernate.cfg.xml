@@ -10,7 +10,7 @@
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">1234.Abcd</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/cadenaServer?useSSL=true</property>
-        <property name="hibernate.hbm2ddl.auto">validate</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
         <!-- validate: validate the schema, makes no changes to the database.
 			 update: update the schema.
 			 create: creates the schema, destroying previous data.
@@ -22,11 +22,11 @@
         <property name="hibernate.c3p0.max_statements">150</property>
         <property name="hibernate.current_session_context_class">thread</property>
         <!-- Entities -->
-        <mapping class="com.cadena.model.Authorities"/>
         <mapping class="com.cadena.model.DomainEntity"/>
         <mapping class="com.cadena.model.Location"/>
         <mapping class="com.cadena.model.Person"/>
         <mapping class="com.cadena.model.User"/>
+        <mapping class="com.cadena.model.Device"/>
     </session-factory>
 </hibernate-configuration>
 

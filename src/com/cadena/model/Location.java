@@ -15,7 +15,6 @@ import javax.validation.constraints.Size;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Location extends DomainEntity{
 
-
 	@Column(name = "C_NMEAGPS")
 	@Size(max = 255, min = 2, message = "{person.rawGps.invalid}")
 	private String nmeaGps;
@@ -26,6 +25,12 @@ public class Location extends DomainEntity{
 
 	@Column(name = "C_DATETIME")
 	private Date dateTime;
+	
+	@Column(name = "C_MESSAGEID")
+	private String messageId ;
+	
+	@Column(name = "C_DEVICEID")
+	private Long deviceId ;
 	
 	
 	public Date getDateTime() {
@@ -51,5 +56,23 @@ public class Location extends DomainEntity{
 	public void setgMapGps(String gMapGps) {
 		this.gMapGps = gMapGps;
 	}
+
+	public String getMessageId() {
+		return messageId;
+	}
+
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
+	}
+
+	public Long getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(Long deviceId) {
+		this.deviceId = deviceId;
+	}
+
+
 
 }

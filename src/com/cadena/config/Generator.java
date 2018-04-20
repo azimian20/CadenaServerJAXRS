@@ -1,77 +1,147 @@
 package com.cadena.config;
 
-import java.net.ResponseCache;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
+import com.cadena.model.Device;
+import com.cadena.model.Location;
+import com.cadena.model.LocationServiceResponse;
 import com.cadena.model.User;
 
 public class Generator {
 
+	//static Log log = LogFactory.getLog(Generator.class);
+
 	public static void main(String[] args) {
-		/*
-		 * HibernateConfig hConfig = new HibernateConfig(); Session session =
-		 * hConfig.getTransactionManager().getSessionFactory().openSession(); User user
-		 * = new User(); user.setUsername("jon"); user.setPassword(new
-		 * BCryptPasswordEncoder().encode("123")); Authorities authorities = new
-		 * Authorities(); authorities.setAuthority("ROLE_ADMIN"); Set<Authorities>
-		 * authoritiesSet = new HashSet<>(); authoritiesSet.add(authorities);
-		 * user.setAuthorities(authoritiesSet); session.save(user); session.close();
-		 * System.out.println("user inserted"); System.out.println(new
-		 * BCryptPasswordEncoder().encode("123"));
-		 */
+
+		// --Networking:
+		try {
+			System.out.println("IP Adress:" + Inet4Address.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		}
+		
+//		insertTestData();
+//		loadTestData();
+		
+		
 		// ----Service tester
-		/*
-		 * WebTarget locationTarget; String myId = locationTarget.resolveTemplate("id",
-		 * 10).request().get(String.class);
-		 * System.out.println("Service tested, responce is" + myId);
-		 */
 
-		/*
-		 * CompletionStage<String> response = ClientBuilder.newClient()
-		 * .target("http://localhost:8080/CadenaServerReactive/getLocation/2").request()
-		 * .rx() .get(new GenericType<String>() { });
-		 * System.out.println("Service tested, responce is" + response);
-		 */
+//		 try { // --calling Cadena sent service (blocking)
+//			 List<LocationServiceResponse> result = ClientBuilder.newClient()
+//				 .target("http://localhost:8088/CadenaServerJAXRS/rest/location/get/27").request().get(new GenericType<List<LocationServiceResponse>>() {});
+//		 System.out.println("___ Service Response:" + result);
+//		 } catch (Exception e) {
+//			 e.printStackTrace();
+//		 }
+		
+		
+		
+		 	final class ObjectPrinter{
+		 		ObjectPrinter printObject(List<LocationServiceResponse> devices) {
+					 System.out.println("96");
+				 for (LocationServiceResponse device : devices) {
+					 System.out.println("98");
+					System.out.println(device.getDeviceLocationses());
+				 }
+				 	return this;
+			 	}
+			 public void setData(String val){
+				 System.out.println(val);
+			 	}
+		 	}
+		 	
+		 	Client client = ClientBuilder.newClient();
+			 WebTarget locationTarget =
+			 client.target("http://localhost:8088/CadenaServerJAXRS/rest/location/get/27");
+			 CompletionStage<List<LocationServiceResponse>> locationCS =
+			 locationTarget.request().rx()
+			 .get(new GenericType<List<LocationServiceResponse>>() {});
 
-		try { // --calling Cadena sent service
+			CompletableFuture.completedFuture(new ObjectPrinter())
+				.thenCombine(locationCS, ObjectPrinter::printObject)
+				.whenCompleteAsync((response, throwable) -> {
+					response.setData(System.currentTimeMillis()+"");
+					throwable.printStackTrace();
+				});
 
-			SessionFactory factory = HibernateConfig.getSessionFactory();
+		
+				
+//		Response response = ClientBuilder.newClient()
+//				.target("http://localhost:8088/CadenaServerJAXRS/rest/location/getDevices/26")
+//				.request().get();
+//		System.out.println(response);
 
-			String id = "id1";
-			String nmea = "5956.6182N,1043.0844E";
-			String dateTime = new Date().toString();
-			Form form = new Form();
-			form.param("id", "id_sent");
-			form.param("coordinates", "coordinates_sent");
-			form.param("information", "information_sent");
-			String result = ClientBuilder.newClient()
-//					.target("http://localhost:8080/CadenaServerJAXRS/rest/location/get?id=id1&nmea=1&dateTime=1")
-					.target("http://localhost:8080/CadenaServerJAXRS/rest/location/get")
-					.request().get(String.class);
-			// .put(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE),
-			// User.class);
-			// .get(User.class);
-			System.out.println("___ Service Response:" + result);
-		} catch (Exception e) {
-			e.printStackTrace();
+	}
+
+	private static void loadTestData() {
+		SessionFactory factory = HibernateConfig.getSessionFactory();
+		Session session = factory.openSession();
+		List<User> devices=session.createQuery("from User").list();
+		for (User device : devices) {
+			System.out.println(device.getUsername());
+		}
+		session.close();
+	}
+	private static void insertTestData() {
+		SessionFactory factory = HibernateConfig.getSessionFactory();
+		Session session = factory.openSession();
+		Transaction tx = session.beginTransaction();
+
+		User jon = new User();
+		jon.setfName("Jon");
+		jon.setlName("Ferei");
+		jon.setUsername("jon");
+		jon.setPassword("123");
+		session.save(jon);
+
+		Device cadena1 = new Device();
+		cadena1.setName("jon's cadena 1");
+		cadena1.setPhoneNumber("+4798845911");
+		cadena1.setUser(jon);
+		session.save(cadena1);
+
+		for (int i = 1; i <= 10; i++) {
+			Location location = new Location();
+			location.setDateTime(new Date());
+			location.setgMapGps("test GPS 1 data " + i);
+			location.setNmeaGps("test NMEA 1 data " + i);
+			location.setMessageId("hard 1 inserted " + i);
+			location.setDeviceId(cadena1.getIdLong());
+			session.save(location);
 		}
 
+		Device cadena2 = new Device();
+		cadena2.setName("jon's cadena 2");
+		cadena2.setPhoneNumber("+4793973504");
+		cadena2.setUser(jon);
+		session.save(cadena2);
+
+		for (int i = 1; i <= 10; i++) {
+			Location location = new Location();
+			location.setDateTime(new Date());
+			location.setgMapGps("test GPS 2 data " + i);
+			location.setNmeaGps("test NMEA 2 data " + i);
+			location.setMessageId("hard 2 inserted " + i);
+			location.setDeviceId(cadena2.getIdLong());
+			session.save(location);
+		}
+
+		tx.commit();
+		session.close();
 	}
 
 	/*
@@ -85,3 +155,4 @@ public class Generator {
 	 */
 
 }
+
